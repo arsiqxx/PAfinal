@@ -136,3 +136,5 @@ python benchmark.py
 
 ## 9. Источники
 Использованы стандартная библиотека C++, OpenMP, Microsoft MPI и matplotlib (для графиков). Сторонний код не копировался.
+#   P A f i n a l  
+ 
