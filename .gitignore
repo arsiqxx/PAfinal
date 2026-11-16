@@ -1,0 +1,9 @@
+# build output (rebuild with build.bat)
+*.exe
+# temporary files from test_correctness.py
+ref.txt
+out.txt
+__pycache__/
+# local editor files
+*.zip
+/c_cpp_properties.json
