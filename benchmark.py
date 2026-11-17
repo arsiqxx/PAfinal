@@ -1,18 +1,4 @@
-"""
-benchmark.py - замер времени и построение графиков ускорения/эффективности.
 
-Ускорение   S(p) = T_serial / T_parallel(p)
-Эффективность E(p) = S(p) / p
-
-1) Strong scaling: поле фиксировано (N x N), растёт число потоков/процессов.
-2) Weak scaling:  на каждый поток/процесс одинаковая работа (N растёт с p).
-
-Каждый замер повторяется REPEATS раз, берётся минимум (меньше шума).
-Результаты: results.csv и графики *.png
-
-Запуск:  python benchmark.py            (по умолчанию N=2000, 200 шагов)
-         python benchmark.py 3000 100
-"""
 import csv
 import math
 import os
@@ -59,7 +45,6 @@ def measure(kind, n, p):
 rows = []
 KINDS = ["openmp", "mpi", "hybrid"]
 
-# ---------- strong scaling ----------
 t_serial = measure("serial", N, 1)
 rows.append(["strong", "serial", N, 1, t_serial, 1.0, 1.0])
 strong = {k: [] for k in KINDS}
@@ -72,7 +57,6 @@ for k in KINDS:
         strong[k].append((p, t, s, s / p))
         rows.append(["strong", k, N, p, t, s, s / p])
 
-# ---------- weak scaling (площадь поля пропорциональна p) ----------
 base = N // 2
 weak = {k: [] for k in ["openmp", "mpi"]}
 for k in weak:
@@ -87,7 +71,6 @@ with open("results.csv", "w", newline="") as f:
     w.writerow(["experiment", "version", "N", "workers", "time_s", "speedup", "efficiency"])
     w.writerows(rows)
 
-# ---------- графики ----------
 labels = {"openmp": "OpenMP (threads)", "mpi": "MPI (processes)", "hybrid": "MPI+OpenMP (2 procs x threads)"}
 
 
