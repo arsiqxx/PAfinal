@@ -8,17 +8,13 @@
 #include <string>
 #include <vector>
 
-using Cell = std::uint8_t;            // 0 = мёртвая, 1 = живая
+using Cell = std::uint8_t;            
 using Grid = std::vector<Cell>;
 
-// Доступ к клетке (i, j) в поле шириной n.
 inline Cell &at(Grid &g, int i, int j, int n) { return g[(size_t)i * n + j]; }
 inline Cell at(const Grid &g, int i, int j, int n) { return g[(size_t)i * n + j]; }
 
-// Начальное значение клетки зависит ТОЛЬКО от её глобальных координат.
-// Поэтому serial, OpenMP и MPI стартуют с одинакового поля,
-// даже если каждый MPI-процесс заполняет только свой кусок.
-// Примерно 25% клеток живые.
+
 inline Cell initial_cell(int i, int j)
 {
     unsigned h = (unsigned)i * 73856093u ^ (unsigned)j * 19349663u ^ 42u;
@@ -28,7 +24,6 @@ inline Cell initial_cell(int i, int j)
     return (h % 4) == 0;
 }
 
-// Количество живых соседей клетки (i, j). Столбцы "заворачиваются".
 inline int count_neighbors(const Grid &g, int i, int j, int n)
 {
     int jl = (j == 0) ? n - 1 : j - 1;      // столбец слева
@@ -38,17 +33,15 @@ inline int count_neighbors(const Grid &g, int i, int j, int n)
          + at(g, i + 1, jl, n) + at(g, i + 1, j, n) + at(g, i + 1, jr, n);
 }
 
-// Правило Конвея: новое состояние клетки.
 inline Cell life_rule(Cell alive, int neighbors)
 {
     return (neighbors == 3) || (alive && neighbors == 2);
 }
 
-// Аргументы командной строки: N STEPS [output_file]
 struct Params {
-    int n = 1000;           // поле N x N
-    int steps = 100;        // число поколений
-    std::string out;        // куда сохранить итоговое поле (необязательно)
+    int n = 1000;           
+    int steps = 100;        
+    std::string out;        
 };
 
 inline Params parse_args(int argc, char **argv)
@@ -64,7 +57,6 @@ inline Params parse_args(int argc, char **argv)
     return p;
 }
 
-// Сохранить настоящие строки 1..rows в текстовый файл ('0'/'1').
 inline void save_grid(const std::string &file, const Grid &g, int rows, int n)
 {
     std::ofstream f(file);
@@ -74,7 +66,6 @@ inline void save_grid(const std::string &file, const Grid &g, int rows, int n)
     }
 }
 
-// Печать результата в одном формате для всех версий (его читает benchmark.py).
 inline void print_result(const char *version, const Params &p, int workers,
                          double seconds, long long alive)
 {
